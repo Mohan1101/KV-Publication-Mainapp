@@ -17,10 +17,11 @@ class InvoiceTable extends Component {
       const snapshot = await firebaseApp.firestore().collection('Credit').get();
 
       const data = snapshot.docs.map((doc) => ({
-        receiver: doc.get('Receiver'),
-        product: doc.get('Product'),
+        date: doc.get('Date'),
+        receiver: doc.get('SchoolName'), 
+        product: doc.get('Products'),
         amount: doc.get('Amount'),
-        invoice: doc.get('Downloadablelink'), // Corrected property name
+        invoice: doc.get('Downloadablelink'), 
         id: doc.id,
       }));
 
@@ -39,10 +40,11 @@ class InvoiceTable extends Component {
   render() {
     return (
       <div>
-        <h2 style={{ textAlign: 'center' }}>Credit Note</h2>
+       
         <table className="styled-table">
           <thead>
             <tr>
+              <th>Date</th>
               <th>Receiver</th>
               <th>Product</th>
               <th>Amount</th>
@@ -50,10 +52,11 @@ class InvoiceTable extends Component {
             </tr>
           </thead>
           <tbody>
-            {this.state.creditData.map((val) => (
+            {this.state.creditData.map((val, index) => (
               <tr key={val.id}>
+                <td>{val.date}</td>
                 <td>{val.receiver}</td>
-                <td>{val.product}</td>
+                <td>{val.product[index].name}, </td>
                 <td>{val.amount}</td>
                 <td>
                   <DownloadIcon

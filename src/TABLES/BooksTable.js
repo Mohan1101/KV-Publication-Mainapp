@@ -10,7 +10,7 @@ export class BooksTable extends Component {
 
         this.state = {
             data: [],
-            categoryOptions: ["Preparing", "DTP", "Printing", "Inventory"],
+            categoryOptions: ["DTP", "Printing", "Inventory"],
             selectedCategory: "",
             completedData: [],
         };

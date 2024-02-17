@@ -79,7 +79,7 @@ export default function NavBar() {
                 <img className='logo' src={logo} />
                 <Divider />
                 <List>
-                    {['Prepare Books', 'DTP', 'Printing', 'Inventory', 'Specimen Management', 'Order Form', 'Pending Books', 'Income', 'Invoice', 'Add Bill'].map((text, index) => (
+                    {['Prepare Books', 'DTP', 'Printing', 'Inventory', 'Specimen Management', 'Order Form', 'Pending Books', 'Income', 'Credit Note', 'Add Bill'].map((text, index) => (
                         <ListItem key={text} disablePadding onClick={() => handleLinkClick(index + 1, text)}>
                             <ListItemButton>
                                 <ListItemIcon style={{ color: "#fff" }}>
