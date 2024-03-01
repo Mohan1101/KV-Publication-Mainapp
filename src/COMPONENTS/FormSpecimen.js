@@ -80,7 +80,7 @@ const FormSpecimen = () => {
       const isExistingSchool = schoolOptions.includes(selectedSchool);
   
       // Add data to the 'Specimen' collection
-      await firebaseApp.firestore().collection('Specimen').doc().set({
+      await firebaseApp.firestore().collection('Specimen').doc(selectedSchool).set({
         sname: selectedSchool,
         principalName: principalName,
         address: address,

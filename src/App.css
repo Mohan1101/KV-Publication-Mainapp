@@ -1,3 +1,7 @@
+
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
 .App {
   text-align: center;
 }
@@ -58,6 +62,42 @@
 .styled-table tbody tr:last-of-type {
     border-bottom: 2px solid #009879;
 }
+
+/* Home.css */
+
+
+
+.logo-container {
+  margin-right: 20px;
+}
+
+.main-logo {
+  width: 150px; /* Adjust the width as needed */
+}
+
+.info-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 2% 0%;
+  border-radius: 5px;
+  background-color: #f8f8f8; /* Set background color as needed */
+}
+
+.welcome-message {
+  font-size: 28px;
+  color: #333; /* Set text color as needed */
+  margin-bottom: 20px;
+  background-color: #0167af;
+  color: #ffffff;
+  width: 100%;
+  padding-top: 2%;
+  padding-bottom: 2%;
+  text-align: center;
+}
+
 
 
 

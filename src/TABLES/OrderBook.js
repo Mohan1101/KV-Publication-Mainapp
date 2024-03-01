@@ -88,9 +88,12 @@ class OrderBook extends Component {
       <div>
         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
           <h2>Status Report {this.props.schoolName}</h2>
-          <Button variant="contained" onClick={this.props.onClose}>
+          <Button variant="contained" color="primary"
+           style={{  marginBottom: '1%', float: 'right', marginTop: '1%'}}
+           onClick={this.props.onClose}>
             Close
           </Button>
+        
         </div>
 
         <table className="styled-table">

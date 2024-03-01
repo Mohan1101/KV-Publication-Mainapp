@@ -27,6 +27,8 @@ export class BooksTable extends Component {
                 const book = {
                     NameofTheBook: e.get('BookName'),
                     AuthorName: e.get('AuthorName'),
+                    RatePerPage: e.get('RatePerPage'),
+                    NoOfPages: e.get('NoOfPages'),
                     PreparePrice: e.get('PreparePrice'),
                     version: e.get('Version'),
                     Category: e.get('Category'),
@@ -51,27 +53,46 @@ export class BooksTable extends Component {
 
 
     handleCategoryChange = (event, id) => {
-        const updatedData = [...this.state.data];
-        const selectedIndex = updatedData.findIndex(item => item.id === id);
+    const updatedData = [...this.state.data];
+    const selectedIndex = updatedData.findIndex(item => item.id === id);
 
-        // check if the category is changed from nothing to something else
-        if (updatedData[selectedIndex].Category === "") {
-            updatedData[selectedIndex].PrepareStatus = "Completed";
-        }
+    // Check if "Rate per page" and "No. of pages" are filled before allowing category selection
+    if (
+        updatedData[selectedIndex].RatePerPage === undefined ||
+        updatedData[selectedIndex].NoOfPages === undefined ||
+        updatedData[selectedIndex].RatePerPage === "" ||
+        updatedData[selectedIndex].NoOfPages === ""
+    ) {
+        alert("Please fill Rate per page and No. of pages before selecting a category");
+        return;
+    }
 
-        updatedData[selectedIndex].Category = event.target.value;
+    // check if the category is changed from nothing to something else
+    if (updatedData[selectedIndex].Category === "") {
+        updatedData[selectedIndex].PrepareStatus = "Completed";
+    }
 
-        this.setState({
-            data: updatedData
-        }, () => {
+    updatedData[selectedIndex].Category = event.target.value;
+
+    this.setState(
+        {
+            data: updatedData,
+        },
+        () => {
             // Update the category and PrepareStatus in Firestore
-            firebaseApp.firestore().collection("GENERAL PRODUCTS").doc(id).update({
-                Category: event.target.value,
-                PrepareStatus: updatedData[selectedIndex].PrepareStatus
-            });
-        });
-        this.getData();
-    };
+            firebaseApp
+                .firestore()
+                .collection("GENERAL PRODUCTS")
+                .doc(id)
+                .update({
+                    Category: event.target.value,
+                    PrepareStatus: updatedData[selectedIndex].PrepareStatus,
+                });
+        }
+    );
+    this.getData();
+};
+
 
     handleBookNameChange = (event, id) => {
         const updatedData = [...this.state.data];
@@ -88,18 +109,79 @@ export class BooksTable extends Component {
         });
     };
 
-    handlePerPieceWorkChange = (event, id) => {
+    handleRatePerPageChange = (event, id) => {
         const updatedData = [...this.state.data];
         const selectedIndex = updatedData.findIndex(item => item.id === id);
-        updatedData[selectedIndex].PreparePrice = event.target.value;
+        const ratePerPage = event.target.value;
+
+        // Assuming "NoOfPages" is a property in your data structure
+        const noOfPages = updatedData[selectedIndex].NoOfPages || 0;
+
+        // Calculate Per Piece Work based on your formula
+        const perPieceWork = ratePerPage * noOfPages;
+
+        updatedData[selectedIndex].RatePerPage = ratePerPage;
+        updatedData[selectedIndex].PreparePrice = perPieceWork;
+
+        // Update the RatePerPage and PerPieceWork in Firestore
+        firebaseApp.firestore().collection("GENERAL PRODUCTS").doc(id).update({
+            RatePerPage: ratePerPage,
+            PreparePrice: perPieceWork,
+            // Add other relevant fields to update in Firestore
+        });
 
         this.setState({
             data: updatedData
-        }, () => {
-            // Update the PerPieceWork in Firestore
-            firebaseApp.firestore().collection("GENERAL PRODUCTS").doc(id).update({
-                PreparePrice: event.target.value
-            });
+        });
+    };
+
+    handleNoOfPagesChange = (event, id) => {
+        const updatedData = [...this.state.data];
+        const selectedIndex = updatedData.findIndex(item => item.id === id);
+        const noOfPages = event.target.value;
+
+        // Assuming "RatePerPage" is a property in your data structure
+        const ratePerPage = updatedData[selectedIndex].RatePerPage || 0;
+
+        // Calculate Per Piece Work based on your formula
+        const perPieceWork = ratePerPage * noOfPages;
+
+        updatedData[selectedIndex].NoOfPages = noOfPages;
+        updatedData[selectedIndex].PreparePrice = perPieceWork;
+
+        // Update the NoOfPages and PerPieceWork in Firestore
+        firebaseApp.firestore().collection("GENERAL PRODUCTS").doc(id).update({
+            NoOfPages: noOfPages,
+            PreparePrice: perPieceWork,
+            // Add other relevant fields to update in Firestore
+        });
+
+        this.setState({
+            data: updatedData
+        });
+    };
+
+    handlePerPieceWorkChange = (event, id) => {
+        const updatedData = [...this.state.data];
+        const selectedIndex = updatedData.findIndex(item => item.id === id);
+
+        // Assuming "RatePerPage" and "NoOfPages" are properties in your data structure
+        const ratePerPage = updatedData[selectedIndex].RatePerPage || 0;
+        const noOfPages = updatedData[selectedIndex].NoOfPages || 0;
+
+        // Calculate Per Piece Work based on your formula
+        const perPieceWork = ratePerPage * noOfPages;
+
+        updatedData[selectedIndex].PreparePrice = perPieceWork;
+
+        // Update the PerPieceWork in Firestore
+        firebaseApp.firestore().collection("GENERAL PRODUCTS").doc(id).update({
+            PreparePrice: perPieceWork,
+            // Add other relevant fields to update in Firestore
+        });
+
+        this.setState({
+            data: updatedData
         });
     };
 
@@ -149,7 +231,10 @@ export class BooksTable extends Component {
                             <th>S.No</th>
                             <th>Name of the Book</th>
                             <th>Author Name</th>
-                            <th>Per.Piece Work</th>
+                            <th>Rate per page</th>
+                            <th>No. of pages</th>
+                            <th>Per piece work</th>
+
                             <th>Version</th>
                             <th>Category</th>
                             <th>Status</th>
@@ -180,15 +265,32 @@ export class BooksTable extends Component {
                                     </td>
                                     <td>
                                         <TextField
-                                            id={`per-piece-work-input-${val.id}`}
-                                            value={val.PreparePrice}
-                                            onChange={(event) => this.handlePerPieceWorkChange(event, val.id)}
+                                            id={`rate-per-page-input-${val.id}`}
+                                            value={val.RatePerPage || ""}
+                                            type= 'number'
+                                            onChange={(event) => this.handleRatePerPageChange(event, val.id)}
+                                            required
                                         />
+                                    </td>
+                                    <td>
+                                        <TextField
+                                            id={`no-of-pages-input-${val.id}`}
+                                            value={val.NoOfPages || ""}
+                                            type= 'number'
+                                            onChange={(event) => this.handleNoOfPagesChange(event, val.id)}
+                                            required
+                                        />
+                                    </td>
+                                    <td>
+                                        {
+                                            val.PreparePrice
+                                        }
                                     </td>
                                     <td>
                                         <TextField
                                             id={`version-input-${val.id}`}
                                             value={val.version}
+                                            type = 'number'
                                             onChange={(event) => this.handleVersionChange(event, val.id)}
                                         />
                                     </td>
@@ -235,24 +337,40 @@ export class BooksTable extends Component {
                             <th>S.No</th>
                             <th>Name of the Book</th>
                             <th>Author Name</th>
-                            <th>Per.Piece Work</th>
+                            <th>Rate per page</th>
+                            <th>No. of pages</th>
+                            <th>Per piece work</th>
                             <th>Version</th>
-
                             <th>Status</th>
+                            <th>Operation</th>
 
                         </tr>
                     </thead>
                     <tbody>
-                        {this.state.completedData.map((val, index) => (
+                    {this.state.completedData.map((val, index) => (
                             <tr key={val.id}>
                                 <td>{index + 1}</td>
                                 <td>{val.NameofTheBook}</td>
                                 <td>{val.AuthorName}</td>
-                                <td>
-                                    {val.PreparePrice}
-                                </td>
+                                <td>{val.RatePerPage}</td>
+                                <td>{val.NoOfPages}</td>
+                                <td>{val.PreparePrice}</td>
                                 <td>{val.version}</td>
                                 <td>{val.PrepareStatus}</td>
+                                <td>
+                                    <DeleteIcon
+                                        className='deleteIcon'
+                                        onClick={() => {
+                                            firebaseApp.firestore().collection("GENERAL PRODUCTS").doc(val.id).delete()
+                                                .then(() => {
+                                                    this.getData();
+                                                })
+                                                .catch(error => {
+                                                    console.error("Error deleting document: ", error);
+                                                });
+                                        }}
+                                    />
+                                </td>
                             </tr>
                         ))}
                     </tbody>

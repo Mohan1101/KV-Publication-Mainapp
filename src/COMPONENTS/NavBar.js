@@ -33,17 +33,27 @@ import IncomeTable from '../TABLES/IncomeTable';
 import ExpenseTable from '../TABLES/ExpenseTable';
 import OrderTable from '../TABLES/OrderTable';
 import PendingTable from '../TABLES/PendingTable';
+import LedgerTable from '../TABLES/LedgerTable';
+import DaybookTable from '../TABLES/DaybookTable';
+import Home from '../TABLES/Home';
 
 const drawerWidth = 240;
 
 export default function NavBar() {
-    const [navLive, setNavLive] = useState(1);
-    const [selectedLink, setSelectedLink] = useState("Prepare Books");
+    const [navLive, setNavLive] = useState(0);  // Set the initial state to 0
+    const [selectedLink, setSelectedLink] = useState("KV Publishers"); // Set the initial selected link
 
     const handleLinkClick = (index, text) => {
         setNavLive(index);
         setSelectedLink(text);
     };
+
+    const handleLogoClick = () => {
+        setNavLive(0);
+        setSelectedLink("KV Publishers");
+    }
+
+
 
     return (
         <Box sx={{ display: 'flex' }}>
@@ -54,7 +64,7 @@ export default function NavBar() {
                 sx={{ width: `calc(100% - ${drawerWidth}px)`, ml: `${drawerWidth}px` }}
             >
                 <Toolbar>
-                    <div>
+                <div >
                         <Typography variant="h6" noWrap component="div">
                             {selectedLink}
                         </Typography>
@@ -75,11 +85,13 @@ export default function NavBar() {
                 }}
                 variant="permanent"
                 anchor="left"
-            >
-                <img className='logo' src={logo} />
+            >   
+                <img className='logo' src={logo} onClick={handleLogoClick} style={{ cursor: 'pointer' }}/>
+                
+
                 <Divider />
                 <List>
-                    {['Prepare Books', 'DTP', 'Printing', 'Inventory', 'Specimen Management', 'Order Form', 'Pending Books', 'Income', 'Credit Note', 'Add Bill'].map((text, index) => (
+                    {['Prepare Books', 'DTP', 'Printing', 'Inventory', 'Specimen Management', 'Order Form', 'Pending Books', 'Day Book', 'Ledger', 'Credit Note', 'Add Bill'].map((text, index) => (
                         <ListItem key={text} disablePadding onClick={() => handleLinkClick(index + 1, text)}>
                             <ListItemButton>
                                 <ListItemIcon style={{ color: "#fff" }}>
@@ -96,7 +108,7 @@ export default function NavBar() {
                 sx={{ flexGrow: 1, bgcolor: 'background.default', p: 3 }}
             >
                 <Toolbar />
-
+                {navLive === 0 ? <Home /> : false}
                 {navLive === 1 ? <BooksTable /> : false}
                 {navLive === 2 ? <DTPTable /> : false}
                 {navLive === 3 ? <PrintingTable /> : false}
@@ -104,9 +116,13 @@ export default function NavBar() {
                 {navLive === 5 ? <SMTable /> : false}
                 {navLive === 6 ? <OrderTable /> : false}
                 {navLive === 7 ? <PendingTable /> : false}
-                {navLive === 8 ? <IncomeTable /> : false}
-                {navLive === 9 ? <InvoiceTable /> : false}
-                {navLive === 10 && window.location.assign('https://kvpublication-invoicegenerator.web.app/creditbalance')}
+               
+                {navLive === 8 ? <DaybookTable /> : false}
+                {navLive === 9 ? <LedgerTable /> : false}
+               
+               
+                {navLive === 10 ? <InvoiceTable /> : false}
+                {navLive === 11 && window.location.assign('https://kvpublication-invoicegenerator.web.app/orderform')}
 
             </Box>
         </Box>

@@ -69,6 +69,7 @@ export default function Form1() {
                     id="version"
                     label="Version"
                     variant="outlined"
+                    type='number'
                 />
             </div>
             <div>

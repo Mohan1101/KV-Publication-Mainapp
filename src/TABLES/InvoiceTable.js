@@ -40,7 +40,7 @@ class InvoiceTable extends Component {
   render() {
     return (
       <div>
-       
+        {this.state.creditData.length === 0 && <h2>No Data Found</h2>}
         <table className="styled-table">
           <thead>
             <tr>
@@ -56,15 +56,17 @@ class InvoiceTable extends Component {
               <tr key={val.id}>
                 <td>{val.date}</td>
                 <td>{val.receiver}</td>
-                <td>{val.product[index].name}, </td>
+                <td>
+                  {val.product.map((val, index) => (
+                    <div key={index}>{val.name},</div>
+                  ))}
+                </td>
                 <td>{val.amount}</td>
                 <td>
                   <DownloadIcon
                    style={{ cursor: 'pointer' }} 
                     onClick={(e) => {
-                      // Open the invoice in a new tab
-                      // change pointer to hand
-                      
+                 
                       val.invoice ? window.open(val.invoice) : alert('No invoice found'); 
                     }}
                   />

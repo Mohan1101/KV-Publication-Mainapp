@@ -73,13 +73,9 @@ class PendingTable extends Component {
     render() {
         return (
             <div>
-                 {this.state.data.length === 0 ? (
-              <p style={{ textAlign: 'center', marginTop: '20px', fontSize: '28px', fontWeight: 'bold' }}>
-                No items to be displayed.
-              </p>
-            ) : (
+                
 
-               
+                { this.state.data.length === 0 && <h2>No Data Found</h2>}
                 <table className="styled-table">
                
                     <thead>
@@ -124,7 +120,7 @@ class PendingTable extends Component {
                     </tbody>
                 </table>
 
-            )}
+        
 
 
 

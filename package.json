@@ -19,7 +19,10 @@
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.14.1",
     "react-scripts": "5.0.1",
-    "web-vitals": "^2.1.4"
+    "tailwindcss": "^3.4.1",
+    "tempa-xlsx": "^0.8.20",
+    "web-vitals": "^2.1.4",
+    "xlsx": "^0.18.5"
   },
   "scripts": {
     "start": "react-scripts start",
