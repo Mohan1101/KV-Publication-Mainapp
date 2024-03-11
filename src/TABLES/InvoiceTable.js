@@ -2,6 +2,7 @@
 import React, { Component } from 'react';
 import firebaseApp from '../Firebasse';
 import DownloadIcon from '@mui/icons-material/Download';
+import Button from '@mui/material/Button';
 
 class InvoiceTable extends Component {
   constructor(props) {
@@ -44,6 +45,15 @@ class InvoiceTable extends Component {
     return (
       <div>
         {this.state.creditData.length === 0 && <h2>No Data Found</h2>}
+        <Button
+                    style={{ marginBottom: '1%',marginTop:'-1%', float: 'right' }}
+                    variant="contained"
+                    onClick={(e) => {
+                        window.location.href = 'https://kvpublication-invoicegenerator.web.app/creditbalance';
+                    }}
+                >
+                    Add Credit Note
+                </Button>
         <table className="styled-table">
           <thead>
             <tr>
