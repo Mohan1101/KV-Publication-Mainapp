@@ -215,6 +215,7 @@ handleAddItem = async () => {
             <TextField
               label="Date"
               variant="outlined"
+              size = 'small'
               type="date"
               value={this.state.newWorkDate}
               onChange={(e) => this.setState({ newWorkDate: e.target.value })}
@@ -226,6 +227,7 @@ handleAddItem = async () => {
 <TextField
   label="Name of the Book"
   variant="outlined"
+  size = 'small'
   select
   value={this.state.newBookName}
   onChange={(e) => this.setState({ newBookName: e.target.value })}
@@ -241,6 +243,7 @@ handleAddItem = async () => {
 
             <TextField
               label="No of Copies"
+              size = 'small'
               variant="outlined"
               type="number"
               value={this.state.newNoOfCopies}

@@ -14,23 +14,13 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import React, { useState } from 'react';
 import { BooksTable } from '../TABLES/BooksTable';
-import FormDTP from './FormDTP';
 import logo from "../IMAGES/logo.jpeg"
 import "../SYLES/Book.css"
-import FormPrinting from './FormPrinting';
-import FormInventory from './FormInventory';
-import FormDispatch from './FormDispatch';
-import PrepareBooks from '../PAGES/PrepareBooks';
 import { DTPTable } from '../TABLES/DTPTable';
-import { Height } from '@mui/icons-material';
 import PrintingTable from '../TABLES/PrintingTable';
 import InventoryTable from '../TABLES/InventoryTable';
-import SMTable from '../TABLES/SpecimenManagementTable';
-import Invoice from './Invoice';
-import FormTable from '../TABLES/FormTable';
+import SMTable from '../TABLES/SpecimenManagementTable'; 
 import InvoiceTable from '../TABLES/InvoiceTable';
-import IncomeTable from '../TABLES/IncomeTable';
-import ExpenseTable from '../TABLES/ExpenseTable';
 import OrderTable from '../TABLES/OrderTable';
 import PendingTable from '../TABLES/PendingTable';
 import LedgerTable from '../TABLES/LedgerTable';
@@ -91,7 +81,7 @@ export default function NavBar() {
 
                 <Divider />
                 <List>
-                    {['Prepare Books', 'DTP', 'Printing', 'Inventory', 'Specimen Management', 'Order Form', 'Pending Books', 'Day Book', 'Ledger', 'Credit Note', 'Add Bill'].map((text, index) => (
+                    {['Prepare Books', 'DTP', 'Printing', 'Inventory', 'Specimen Management', 'Order Form', 'Pending Books', 'Day Book', 'Ledger', 'Credit Note'].map((text, index) => (
                         <ListItem key={text} disablePadding onClick={() => handleLinkClick(index + 1, text)}>
                             <ListItemButton>
                                 <ListItemIcon style={{ color: "#fff" }}>
@@ -122,7 +112,7 @@ export default function NavBar() {
                
                
                 {navLive === 10 ? <InvoiceTable /> : false}
-                {navLive === 11 && window.location.assign('https://kvpublication-invoicegenerator.web.app/orderform')}
+              
 
             </Box>
         </Box>

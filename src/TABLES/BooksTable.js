@@ -222,7 +222,7 @@ export class BooksTable extends Component {
     render() {
         return (
             <div>
-                 <Button style={{ marginBottom: '1%', float: 'right' }} variant='contained' onClick={e => {
+                 <Button style={{ marginBottom: '1%', marginTop:'-1%', float: 'right' }} variant='contained' onClick={e => {
                     window.location = '/PerpareBook'
                 }}>Add Work</Button>
                 <table className='styled-table'>
@@ -252,6 +252,7 @@ export class BooksTable extends Component {
                                             id={`book-name-input-${val.id}`}
                                             multiline
                                             maxRows={4}
+                                            size = 'small'
                                             value={val.NameofTheBook}
                                             onChange={(event) => this.handleBookNameChange(event, val.id)}
                                         />
@@ -260,6 +261,7 @@ export class BooksTable extends Component {
                                         <TextField
                                             id={`author-name-input-${val.id}`}
                                             value={val.AuthorName}
+                                            size = 'small'
                                             onChange={(event) => this.handleAuthorNameChange(event, val.id)}
                                         />
                                     </td>
@@ -268,6 +270,7 @@ export class BooksTable extends Component {
                                             id={`rate-per-page-input-${val.id}`}
                                             value={val.RatePerPage || ""}
                                             type= 'number'
+                                            size = 'small'
                                             onChange={(event) => this.handleRatePerPageChange(event, val.id)}
                                             required
                                         />
@@ -277,6 +280,7 @@ export class BooksTable extends Component {
                                             id={`no-of-pages-input-${val.id}`}
                                             value={val.NoOfPages || ""}
                                             type= 'number'
+                                            size = 'small'
                                             onChange={(event) => this.handleNoOfPagesChange(event, val.id)}
                                             required
                                         />
@@ -291,6 +295,7 @@ export class BooksTable extends Component {
                                             id={`version-input-${val.id}`}
                                             value={val.version}
                                             type = 'number'
+                                            size = 'small'
                                             onChange={(event) => this.handleVersionChange(event, val.id)}
                                         />
                                     </td>

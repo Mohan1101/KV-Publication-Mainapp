@@ -99,6 +99,7 @@ class OrderBook extends Component {
         <table className="styled-table">
           <thead>
             <tr>
+              <th>S.No</th>
               <th>Date</th>
               <th>Books</th>
               <th>Dispatched</th>
@@ -109,6 +110,7 @@ class OrderBook extends Component {
           <tbody>
           {this.state.products.map((product, index) => (
               <tr key={index}>
+                <td>{index + 1}</td>
                 <td>{product.Date}</td>
                 <td>{product.Product}</td>
                 <td>{product.Quantity}</td>

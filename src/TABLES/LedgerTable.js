@@ -14,6 +14,7 @@ import {
   InputLabel,
 } from '@mui/material';
 import { Delete } from '@mui/icons-material';
+import * as XLSX from 'xlsx';
 
 class LedgerTable extends Component {
   constructor(props) {
@@ -26,8 +27,9 @@ class LedgerTable extends Component {
       openDialog: false,
       ledgerName: '',
       transactionType: '',
-      startDate:'',
-      endDate:'',
+      startDate: '',
+      endDate: '',
+      search: '',
     };
   }
 
@@ -57,13 +59,13 @@ class LedgerTable extends Component {
   };
 
   handleAddLedger = async () => {
-    const { ledgerName, transactionType , date} = this.state;
+    const { ledgerName, transactionType, date } = this.state;
 
-     // Check if any of the required fields is empty
-  if (!ledgerName || !transactionType || !date) {
-    alert("Please fill in all required fields.");
-    return;
-  }
+    // Check if any of the required fields is empty
+    if (!ledgerName || !transactionType || !date) {
+      alert("Please fill in all required fields.");
+      return;
+    }
 
     try {
       const ledgerDocRef = firebaseApp.firestore().collection('Ledger').doc(ledgerName);
@@ -132,7 +134,7 @@ class LedgerTable extends Component {
         name: event.target.value,
       });
       // also update the mane field in the subcollection 'data'
-   
+
     } catch (error) {
       console.error('Error updating ledger name:', error);
     }
@@ -175,10 +177,10 @@ class LedgerTable extends Component {
       console.error('Error deleting ledger:', error);
     }
   };
-  
 
-  
-  
+
+
+
 
   filterEntriesByDate = (startDate, endDate) => {
     return this.state.daybookData.filter((entry) => {
@@ -189,23 +191,23 @@ class LedgerTable extends Component {
 
   handleDateFilter = async () => {
     const { date, startDate, endDate } = this.state;
-  
+
     try {
       const ledgerDocRef = firebaseApp.firestore().collection('Ledger');
       const ledgerDocs = await ledgerDocRef.get();
-  
+
       let ledgerData = [];
-  
+
       const promises = ledgerDocs.docs.map(async (ledgerDoc) => {
         const ledgerDataRef = ledgerDoc.ref;
         const ledgerDataSnapshot = await ledgerDataRef.get();
-  
+
         if (ledgerDataSnapshot.exists) {
           const ledgerItem = {
             id: ledgerDoc.id,
             ...ledgerDataSnapshot.data(),
           };
-  
+
           // Check if the ledger's date is within the specified range
           if (startDate && endDate) {
             const ledgerDate = new Date(ledgerItem.date);
@@ -217,15 +219,15 @@ class LedgerTable extends Component {
           }
         }
       });
-  
+
       await Promise.all(promises);
-  
+
       this.setState({ ledgerData });
     } catch (error) {
       console.error('Error fetching ledger data:', error);
     }
   };
-  
+
 
   convertToDDMMYYYY = (inputDate) => {
     // Check if the input is a valid date and handle it
@@ -235,8 +237,8 @@ class LedgerTable extends Component {
     return `${day}/${month}/${year}`;
   };
 
-   // Calculate total credit, total debit, and balance for selected ledger
-   calculateTotalsAndBalance = () => {
+  // Calculate total credit, total debit, and balance for selected ledger
+  calculateTotalsAndBalance = () => {
     const { selectedLedger } = this.state;
 
     if (!selectedLedger) {
@@ -254,7 +256,7 @@ class LedgerTable extends Component {
     }, {
       totalCredit: 0,
       totalDebit: 0,
-      
+
     });
 
     const balance = totals.totalCredit - totals.totalDebit;
@@ -266,57 +268,122 @@ class LedgerTable extends Component {
     };
   };
 
+
+  handleSearchChange = (event) => {
+    const search = event.target.value.toLowerCase();
+    this.setState({ search });
+
+    // If the search term is empty, show all items
+    if (search === '') {
+      this.fetchLedgerData(); // Reset to the original data
+    } else {
+      // Filter ledgerData based on the search term
+      const filteredLedgerData = this.state.ledgerData.filter((item) =>
+        item.name.toLowerCase().includes(search)
+      );
+
+      this.setState({ ledgerData: filteredLedgerData });
+    }
+  };
+
+  exportToExcel = () => {
+    const { selectedLedger } = this.state;
+    const { totalCredit, totalDebit, balance } = this.calculateTotalsAndBalance();
+  
+    if (!selectedLedger) {
+      return;
+    }
+  
+    const data = [
+      ['S.No', 'Date', 'Description', 'Credit', 'Debit'],
+      ...selectedLedger.data.map((item, index) => [
+        index + 1,
+        this.convertToDDMMYYYY(item.date),
+        item.description,
+        item.credit,
+        item.debit,
+      ]),
+      [], // Empty row
+      ['', '', 'Total', totalCredit, totalDebit],
+      
+      ['', '', 'Balance', '', balance],
+    ];
+  
+    const ws = XLSX.utils.aoa_to_sheet(data);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Ledger_Details');
+  
+    const excelFileName = `Ledger_Details_${selectedLedger.id}.xlsx`;
+  
+    XLSX.writeFile(wb, excelFileName);
+  };
+  
+
+
+
+
   render() {
-    const { ledgerData, selectedLedger, date, openDialog, ledgerName, transactionType } = this.state;
+    const { ledgerData, selectedLedger, date, openDialog, ledgerName, transactionType, search } = this.state;
     const { totalCredit, totalDebit, balance } = this.calculateTotalsAndBalance();
 
     return (
       <div>
         <div className='flex '>
-       
-       <div className='w-full flex items-center gap-12 -mt-6 pb-2'>
-          <div>
-            <h2 className='text-lg -mb-1 font-bold'>Start Date</h2>
-            <TextField 
 
-              type="date"
-              value={this.state.startDate}
-              onChange={(e) => this.setState({ startDate: e.target.value })}
-            />
-          </div>
+          <div className='w-full flex items-center gap-12 -mt-4  pb-4 '>
+            <div>
+              <span className='mr-2 text-lg -mb-1 font-bold'>Start Date</span>
+              <TextField
+                size='small'
+                type="date"
+                value={this.state.startDate}
+                onChange={(e) => this.setState({ startDate: e.target.value })}
+              />
+            </div>
 
-          <div>
-            <h2 className='text-lg -mb-1  font-bold'>End Date</h2>
-            <TextField
-              type="date"
-              value={this.state.endDate}
-              onChange={(e) => this.setState({ endDate: e.target.value })}
-            />
+            <div>
+              <span className='mr-2  text-lg -mb-1  font-bold'>End Date</span>
+              <TextField
+                size='small'
+                type="date"
+                value={this.state.endDate}
+                onChange={(e) => this.setState({ endDate: e.target.value })}
+              />
+            </div>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={() => this.handleDateFilter(this.state.startDate, this.state.endDate)}
+            >
+              Apply Filter
+            </Button>
+            <div>
+              {/* Search Input */}
+              <TextField
+                size='small'
+                label="Search Ledger"
+                value={search}
+                onChange={this.handleSearchChange}
+              />
+            </div>
+
+
+
+
+
           </div>
           <Button
             variant="contained"
             color="primary"
-            onClick={() => this.handleDateFilter(this.state.startDate, this.state.endDate)}
+            style={{ float: 'right', marginBottom: '2%', marginTop: '-1%', width: '140px' }}
+            onClick={() => this.setState({ openDialog: true })}
           >
-            Apply Filter
+            Add Ledger
           </Button>
 
-        
-
-         
         </div>
-        <Button
-          variant="contained"
-          color="primary"
-          style={{ float: 'right', marginBottom:'2%', marginTop:'0%', width: '140px'}}
-          onClick={() => this.setState({ openDialog: true })}
-        >
-          Add Ledger
-        </Button>
-    
-    </div>
         {/* Ledger Table */}
-        { ledgerData.length === 0 && <h2>No Ledger Data Found</h2>}
+        {ledgerData.length === 0 && <h2>No Ledger Data Found</h2>}
         <table className='styled-table'>
           <thead>
             <tr>
@@ -331,19 +398,21 @@ class LedgerTable extends Component {
             {ledgerData.map((item, index) => (
               <tr key={item.id} onClick={() => this.handleLedgerClick(item.id)} style={{ cursor: 'pointer' }}>
                 <td>{index + 1}</td>
-              
+
                 <td>{this.convertToDDMMYYYY(item.date)}</td>
                 <td>
                   <TextField
+                    size='small'
                     value={item.name}
                     onChange={(e) => this.handleLedgerNameChange(item.id, e)}
                   />
                 </td>
                 <td>
                   <FormControl>
-                    <InputLabel id={`transaction-type-label-${item.id}`}>Transaction Type</InputLabel>
+                   
                     <Select
                       labelId={`transaction-type-label-${item.id}`}
+                      size='small'
                       value={item.type}
                       onChange={(e) => this.handleTransactionTypeChange(item.id, e.target.value)}
                       displayEmpty
@@ -371,13 +440,15 @@ class LedgerTable extends Component {
 
             <TextField
               label="Ledger Name"
+              size='small'
               fullWidth
               value={ledgerName}
               onChange={(e) => this.setState({ ledgerName: e.target.value })}
             />
             <TextField
-             
+
               type="date"
+              size='small'
               fullWidth
               value={date}
               onChange={(e) => this.setState({ date: e.target.value })}
@@ -409,10 +480,11 @@ class LedgerTable extends Component {
           <>
 
             <div className='flex mt-4 -mb-4 justify-between'>
-            <h2>Ledger Details - {selectedLedger.id}</h2>
-            <div className='flex gap-4'>
+              <h2>Ledger Details - {selectedLedger.id}</h2>
+              <div className='flex gap-4'>
                 <TextField
                   label="Total Credit"
+                  size='small'
                   value={totalCredit.toString()}
                   InputProps={{
                     readOnly: true,
@@ -420,6 +492,7 @@ class LedgerTable extends Component {
                 />
                 <TextField
                   label="Total Debit"
+                  size='small'
                   value={totalDebit.toString()}
                   InputProps={{
                     readOnly: true,
@@ -427,18 +500,28 @@ class LedgerTable extends Component {
                 />
                 <TextField
                   label="Balance"
+                  size='small'
                   value={balance.toString()}
                   InputProps={{
                     readOnly: true,
                   }}
                 />
               </div>
-            <Button variant="contained" color="primary"
-           style={{  marginBottom: '2%', float: 'right', marginTop: '1%'}}
-           onClick={() => this.setState({ selectedLedger: null })}>
-            Close
-          </Button>
-          </div>
+              <Button
+                variant="contained"
+                color="primary"
+                style={{ marginBottom: '2%', marginTop: '1%' }}
+                onClick={this.exportToExcel}
+              >
+                Export to Excel
+              </Button>
+
+              <Button variant="contained" color="primary"
+                style={{ marginBottom: '2%', float: 'right', marginTop: '1%' }}
+                onClick={() => this.setState({ selectedLedger: null })}>
+                Close
+              </Button>
+            </div>
             <table className='styled-table'>
               <thead>
                 <tr>
@@ -447,7 +530,7 @@ class LedgerTable extends Component {
                   <th>Description</th>
                   <th>Credit</th>
                   <th>Debit</th>
-                  
+
                 </tr>
               </thead>
               <tbody>
@@ -458,7 +541,7 @@ class LedgerTable extends Component {
                     <td>{item.description}</td>
                     <td>{item.credit}</td>
                     <td>{item.debit}</td>
-                   
+
                   </tr>
                 ))}
               </tbody>

@@ -10,7 +10,7 @@ export class PrintingTable extends Component {
 
         this.state = {
             data: [],
-            categoryOptions: ["Preparing",  "DTP", "Printing", "Inventory"],
+            categoryOptions: ["Inventory"],
             selectedCategory: "",
             completedData: [],
         };
@@ -216,8 +216,10 @@ export class PrintingTable extends Component {
                                     <td>{val.AuthorName}</td>
                                     <td>
                                         <TextField
+                                        
                                             id={`rate-per-page-input-${val.id}`}
                                             value={val.RatePerPage || ""}
+                                            size = 'small'
                                             onChange={(event) => this.handleRatePerPageChange(event, val.id)}
                                             type='number'
                                         />
@@ -226,6 +228,7 @@ export class PrintingTable extends Component {
                                         <TextField
                                             id={`no-of-pages-input-${val.id}`}
                                             type='number'
+                                            size = 'small'
                                             value={val.NoOfPages || ""}
                                             onChange={(event) => this.handleNoOfPagesChange(event, val.id)}
 
@@ -241,6 +244,7 @@ export class PrintingTable extends Component {
                                         <TextField
                                             type='number'
                                             id={`making-charge-input-${val.id}`}
+                                            size = 'small'
                                             value={val.Extracharge || ""}
                                             onChange={(event) => this.handleMakingChargeChange(event, val.id)}
                                             required

@@ -109,12 +109,13 @@ export class InventoryTable extends Component {
         const updatedData = [...this.state.data];
         const selectedIndex = updatedData.findIndex(item => item.id === id);
     
-        // Validate that the input is a number
-        const multiples = isNaN(Number(event.target.value)) ? 0 : Number(event.target.value);
+    
+        const multiples = event.target.value;
     
         // Calculate the new SellingPrice
         const makingCharge = updatedData[selectedIndex].MakingCharge;
-        const sellingPrice = multiples * makingCharge;
+        //round off the selling price
+        const sellingPrice = Math.round(multiples * makingCharge);
     
         // Update the Multiples and SellingPrice in the state
         updatedData[selectedIndex].Multiples = multiples;
@@ -189,9 +190,11 @@ export class InventoryTable extends Component {
                                     <td>
                                         <TextField
                                             id={`multiples-input-${val.id}`}
+                                            size = 'small'
+                                            
                                             value={val.Multiples}
                                             onChange={(event) => this.handleMultiplesChange(event, val.id)}
-                                            type='text'
+                                            type='number'
                                         />
                                     </td>
                                     <td>

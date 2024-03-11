@@ -23,9 +23,11 @@ class OrderTable extends Component {
             res.docs.forEach((e) => {
                 dbdata.push({
                     Date: e.get('Date'),
+                    orderId: e.get('orderid'),
                     SchoolName: e.get('SchoolName'),
                     Principal: e.get('Principal'),
                     Contact: e.get('Contact'),
+                    Amount: e.get('Amount'),
                     Email: e.get('Email'),
                     DownloadLink: e.get('Downloadablelink'),
                     id: e.id,
@@ -59,7 +61,7 @@ class OrderTable extends Component {
         return (
             <div>
                 <Button
-                    style={{ marginBottom: '1%', float: 'right' }}
+                    style={{ marginBottom: '1%',marginTop:'-1%', float: 'right' }}
                     variant="contained"
                     onClick={(e) => {
                         window.location.href = 'https://kvpublication-invoicegenerator.web.app/orderform';
@@ -71,12 +73,14 @@ class OrderTable extends Component {
                 <table className="styled-table">
                     <thead>
                         <tr>
-                            <th>S.no</th>
+                            <th>S.No</th>
+                            <th>Order Id</th>
                             <th>Date</th>
                             <th>School Name</th>
                             <th>Principal Name</th>
                             <th>Contact</th>
                             <th>Email</th>
+                            <th>Amount</th>
                             <th>Download Invoice</th>
 
                         </tr>
@@ -90,11 +94,13 @@ class OrderTable extends Component {
                                     style={{ cursor: 'pointer' }}
                                 >
                                     <td>{index + 1}</td>
+                                    <td>{val.orderId}</td>
                                     <td>{val.Date}</td>
                                     <td>{val.SchoolName}</td>
                                     <td>{val.Principal}</td>
                                     <td>{val.Contact}</td>
                                     <td>{val.Email}</td>
+                                    <td>{val.Amount}</td>
                                     <td>
                                         <DownloadIcon
                                             onClick={(e) => {

@@ -20,7 +20,10 @@ class InvoiceTable extends Component {
         date: doc.get('Date'),
         receiver: doc.get('SchoolName'), 
         product: doc.get('Products'),
-        amount: doc.get('Amount'),
+        amount: doc.get('creditTotal'),
+        balance: doc.get('balance'),
+        orderId: doc.get('orderid'),
+        invoiceamount: doc.get('invoiceTotal'),
         invoice: doc.get('Downloadablelink'), 
         id: doc.id,
       }));
@@ -44,16 +47,22 @@ class InvoiceTable extends Component {
         <table className="styled-table">
           <thead>
             <tr>
+              <th>S.No</th>
+              <th>Order Id</th>
               <th>Date</th>
               <th>Receiver</th>
               <th>Product</th>
-              <th>Amount</th>
+              <th>Invoice Amount</th>
+              <th>Credit Amount</th>
+              <th>Balance</th>
               <th>Invoice</th>
             </tr>
           </thead>
           <tbody>
             {this.state.creditData.map((val, index) => (
               <tr key={val.id}>
+                <td>{index + 1}</td>
+                <td>{val.orderId}</td>
                 <td>{val.date}</td>
                 <td>{val.receiver}</td>
                 <td>
@@ -61,7 +70,11 @@ class InvoiceTable extends Component {
                     <div key={index}>{val.name},</div>
                   ))}
                 </td>
+                <td>{val.invoiceamount}</td>
+
                 <td>{val.amount}</td>
+
+                <td>{val.balance}</td>
                 <td>
                   <DownloadIcon
                    style={{ cursor: 'pointer' }} 

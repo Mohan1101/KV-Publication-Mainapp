@@ -10,7 +10,7 @@ export class DTPTable extends Component {
 
         this.state = {
             data: [],
-            categoryOptions: ["Preparing", "DTP", "Printing", "Inventory"],
+            categoryOptions: ["Printing", "Inventory"],
             selectedCategory: "",
             completedData: [],
         };
@@ -200,6 +200,7 @@ export class DTPTable extends Component {
                                         <TextField
                                             id={`rate-per-page-${val.id}`}
                                             type="number"
+                                            size = 'small'
                                             value={val.RatePerPage || ""}
                                             onChange={(event) => this.handleRatePerPageChange(event, val.id)}
                                         />
@@ -208,6 +209,7 @@ export class DTPTable extends Component {
                                         <TextField
                                             id={`no-of-pages-${val.id}`}
                                             type="number"
+                                            size = 'small'
                                             value={val.NoOfPages || ""}
                                             onChange={(event) => this.handleNoOfPagesChange(event, val.id)}
                                         />

@@ -25,8 +25,8 @@ class DaybookTable extends Component {
       selectedLedger: '',
       openDialog: false,
       date: '',
-      credit: 0,
-      debit: 0,
+      credit: '',
+      debit: '',
       description: '',
       startDate: '',
       endDate: '',
@@ -293,17 +293,60 @@ class DaybookTable extends Component {
 
   exportToExcel = () => {
     const { daybookData } = this.state;
+  
     // Map through daybookData and format the date using convertToDDMMYYYY method
     const formattedData = daybookData.map(entry => ({
       ...entry,
       date: this.convertToDDMMYYYY(entry.date), // Format the date
     }));
   
-    const ws = XLSX.utils.json_to_sheet(formattedData.map(({ id, ledgerId, ...item }) => item));
+    // Create an array with the header row
+    const excelData = [
+      ["S.No", "Date", "Ledger Name", "Credit", "Debit", "Description"],
+      ...formattedData.map(({ id, ledgerId, ...item }, index) => [
+        index + 1,
+        item.date,
+        item.name,
+        item.credit,
+        item.debit,
+        item.description
+      ])
+    ];
+  
+    // Add Total row
+    const totalRow = [
+      "",
+      "",
+      "Total",
+      this.getTotalCredit(),
+      this.getTotalDebit(),
+      "",
+    ];
+  
+    excelData.push(totalRow);
+  
+    // Calculate the balance and add it as a row
+    const balanceRow = [
+      "",
+      "",
+      "Balance",
+      "",
+      this.getTotalCredit() - this.getTotalDebit(),
+    ];
+  
+    excelData.push(balanceRow);
+  
+    // Create a new worksheet
+    const ws = XLSX.utils.aoa_to_sheet(excelData);
+  
+    // Create a new workbook
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "DaybookData");
+  
+    // Write the file
     XLSX.writeFile(wb, "DaybookData.xlsx");
   };
+  
 
   render() {
     const {
@@ -325,11 +368,11 @@ class DaybookTable extends Component {
 
 
 
-        <div className='w-full flex items-center justify-evenly gap-8 pb-2'>
+        <div className='w-full flex items-center justify-evenly gap-8 -mt-4 pb-4 '>
           <div>
-            <span className='text-lg font-bold'>Start Date</span>
+            <span className='mr-2 text-lg font-bold'>Start Date</span>
             <TextField
-
+               size = 'small'
               type="date"
               value={this.state.startDate}
               onChange={(e) => this.setState({ startDate: e.target.value })}
@@ -337,8 +380,9 @@ class DaybookTable extends Component {
           </div>
 
           <div>
-            <span className='text-lg font-bold'>End Date</span>
+            <span className='mr-2 text-lg font-bold'>End Date</span>
             <TextField
+             size = 'small'
               type="date"
               value={this.state.endDate}
               onChange={(e) => this.setState({ endDate: e.target.value })}
@@ -347,14 +391,13 @@ class DaybookTable extends Component {
           <Button
             variant="contained"
             color="primary"
-            style={{ marginTop: '2%' , width:'190px'}}
+            style={{ marginTop: '0%' , width:'190px'}}
             onClick={() => this.handleDateFilter(this.state.startDate, this.state.endDate)}
           >
             Apply Filter
           </Button>
 
-          <TextField label="Total Credit" value={totalCredit.toString()} readOnly />
-          <TextField label="Total Debit" value={totalDebit.toString()} readOnly />
+          
           <Button
             variant="contained"
             color="primary"
@@ -366,7 +409,7 @@ class DaybookTable extends Component {
           <Button
             variant="contained"
             color="primary"
-            style={{ float: 'right', marginBottom: '2%', width:'210px'}}
+            style={{ float: 'right', marginBottom: '0%', width:'210px'}}
             onClick={this.handleOpenDialog}
           >
             Add Daybook
@@ -377,64 +420,74 @@ class DaybookTable extends Component {
 
 
         {/* Daybook Table */}
-        { daybookData.length === 0 && <h2>No Data Found</h2> }
-          <table className="styled-table">
-            <thead>
+        {daybookData.length === 0 && <h2>No Data Found</h2>}
+<table className="styled-table">
+  <thead>
+    <tr>
+      <th>S.No</th>
+      <th>Date</th>
+      <th>Ledger Name</th>
+      <th>Credit</th>
+      <th>Debit</th>
+      <th>Description</th>
+      <th>Operation</th>
+    </tr>
+  </thead>
+  <tbody>
+    {daybookData.map((entry, index) => (
+      <tr key={entry.id}>
+        <td>{index + 1}</td>
+        <td>{this.convertToDDMMYYYY(entry.date)}</td>
+        <td>{entry.name}</td>
+        <td>
+          <TextField
+            type="number"
+            value={entry.credit}
+            size="small"
+            onChange={(e) => this.handleEditCredit(entry.id, e.target.value)}
+          />
+        </td>
+        <td>
+          <TextField
+            type="number"
+            size="small"
+            value={entry.debit}
+            onChange={(e) => this.handleEditDebit(entry.id, e.target.value)}
+          />
+        </td>
+        <td>
+          <TextField
+            type="text"
+            size="small"
+            value={entry.description}
+            onChange={(e) => this.handleEditDescription(entry.id, e.target.value)}
+          />
+        </td>
+        <td>
+          <DeleteIcon
+            className="deleteIcon"
+            onClick={() => this.handleDeleteDaybook(entry.ledgerId, entry.id)}
+          />
+        </td>
+      </tr>
+    ))}
+    <tr>
+      <td colSpan="3"></td>
+      <td>
+        <TextField size="small" label="Total Credit" value={totalCredit.toString()} readOnly />
+      </td>
+      <td>
+        <TextField size="small" label="Total Debit" value={totalDebit.toString()} readOnly />
+      </td>
+      <td>
+        <TextField size="small" label="Balance" value={(totalCredit - totalDebit).toString()} readOnly />
+      </td>
+      <td colSpan="1"></td>
+    </tr>
+   
+  </tbody>
+</table>
 
-
-
-              <tr>
-                <th>S.No</th>
-                <th>Date</th>
-                <th>Ledger Name</th>
-                <th>Credit</th>
-                <th>Debit</th>
-                <th>Description</th>
-                <th>Operation</th>
-              </tr>
-            </thead>
-            <tbody>
-              {daybookData.map((entry, index) => (
-                <tr key={entry.id}>
-                  <td>{index + 1}</td>
-                  <td>
-                    {
-                      this.convertToDDMMYYYY(entry.date)
-                    }
-                  </td>
-                  <td>{entry.name}</td>
-                  <td>
-                    <TextField
-                      type="number"
-                      value={entry.credit}
-                      onChange={(e) => this.handleEditCredit(entry.id, e.target.value)}
-                    />
-                  </td>
-                  <td>
-                    <TextField
-                      type="number"
-                      value={entry.debit}
-                      onChange={(e) => this.handleEditDebit(entry.id, e.target.value)}
-                    />
-                  </td>
-                  <td>
-                    <TextField
-                      type="text"
-                      value={entry.description}
-                      onChange={(e) => this.handleEditDescription(entry.id, e.target.value)}
-                    />
-                  </td>
-                  <td>
-                    <DeleteIcon
-                      className='deleteIcon'
-                      onClick={() => this.handleDeleteDaybook(entry.ledgerId, entry.id)}
-                    />
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-
-          </table>
 
 
 
@@ -460,7 +513,7 @@ class DaybookTable extends Component {
             <TextField
 
               type="date"
-
+              size = 'small'
               fullWidth
               value={date}
               onChange={(e) => this.setState({ date: e.target.value })}
@@ -468,6 +521,7 @@ class DaybookTable extends Component {
             <TextField
               label="Credit"
               type="number"
+               size = 'small'
 
               fullWidth
               value={credit}
@@ -476,6 +530,7 @@ class DaybookTable extends Component {
             <TextField
               label="Debit"
               type="number"
+              size = 'small'
 
 
 
@@ -485,6 +540,7 @@ class DaybookTable extends Component {
             />
             <TextField
               label="Description"
+              size = 'small'
               multiline
               fullWidth
               value={description}

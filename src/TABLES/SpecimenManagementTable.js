@@ -40,7 +40,7 @@ const SMTable = () => {
 
     return (
         <div>
-             <Button style={{ marginBottom: '1%', float: 'right' }} variant='contained' onClick={e => {
+             <Button style={{ marginBottom: '1%',marginTop:'-1%', float: 'right' }} variant='contained' onClick={e => {
                 window.location = '/addSpecimen'
             }}>Add School</Button>
             <table className='styled-table'>
