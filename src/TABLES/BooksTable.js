@@ -33,6 +33,7 @@ export class BooksTable extends Component {
                     version: e.get('Version'),
                     Category: e.get('Category'),
                     PrepareStatus: e.get('PrepareStatus'),
+                    DistributorName: e.get('Distributorname'),
                     id: e.id
                 };
 
@@ -243,7 +244,7 @@ export class BooksTable extends Component {
                     </thead>
                     <tbody>
                         {this.state.data
-                            .filter(val => val.Category === "Preparing" || val.Category === "")
+                            .filter(val => val.Category === "" && val.DistributorName === "NA")
                             .map((val, index) => (
                                 <tr key={val.id}>
                                     <td>{index + 1}</td>

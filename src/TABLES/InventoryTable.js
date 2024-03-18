@@ -37,6 +37,9 @@ export class InventoryTable extends Component {
                     SellingPrice: e.get('SellingPrice'),
                     Category: e.get('Category'),
                     isQuantityUpdated: e.get('isQuantityUpdated'),
+                    Distributorname: e.get('Distributorname'),
+                    Price: e.get('Price'),
+                    TotalPrice: e.get('TotalPrice'),
                     id: e.id
                 });
             });
@@ -49,35 +52,11 @@ export class InventoryTable extends Component {
         }
     };
     
-
-    // calculateTotalPerPieceWork = (id, preparePrice, dtpPrice, printPrice, otherCharges) => {
-    //     const total = Number(preparePrice) + Number(dtpPrice) + Number(printPrice) + Number(otherCharges);
-        
-    //     const selectedIndex = this.state.data.findIndex(item => item.id === id);
-    //     const updatedData = [...this.state.data];
-
-     
-         
-    //     updatedData[selectedIndex].MakingCharge = total / updatedData[selectedIndex].NoOfPages;
-      
-        
-    //     // Update the MakingCharge in Firestore
-    //     firebaseApp.firestore().collection("GENERAL PRODUCTS").doc(id).update({
-    //         Quantity: updatedData[selectedIndex].Quantity,
-    //         MakingCharge: updatedData[selectedIndex].MakingCharge
-    //     });
-    
-    //     // Update the state with the new data without causing re-renders
-    //     this.state.data[selectedIndex] = updatedData[selectedIndex];
-
-     
-    
-    //     return total;
-    // };
-    
   
-    calculateTotalPerPieceWork (id, preparePrice, dtpPrice, printPrice, otherCharges) {
-        const total = Number(preparePrice) + Number(dtpPrice) + Number(printPrice) + Number(otherCharges);
+    calculateTotalPerPieceWork (id, preparePrice, dtpPrice, printPrice, otherCharges, price, quantity) {
+        // check if the distributor name is not NA
+        if (this.state.data.find(item => item.id === id).Distributorname === "NA") {
+            const total = Number(preparePrice) + Number(dtpPrice) + Number(printPrice) + Number(otherCharges);
 
         const selectedIndex = this.state.data.findIndex(item => item.id === id);
         const updatedData = [...this.state.data];
@@ -100,12 +79,42 @@ export class InventoryTable extends Component {
         }
 
         return total;
+        }
+
+        else {
+       const total = Number(price)
+       
+        const selectedIndex = this.state.data.findIndex(item => item.id === id);
+        const updatedData = [...this.state.data];
+
+        // Check if Quantity has already been updated
+        if (!updatedData[selectedIndex].isQuantityUpdated) {
+            updatedData[selectedIndex].MakingCharge = total / updatedData[selectedIndex].Quantity;
+
+            // Update the MakingCharge and set isQuantityUpdated to true
+            firebaseApp.firestore().collection("GENERAL PRODUCTS").doc(id).update({
+                Quantity: updatedData[selectedIndex].Quantity,
+                SellingPrice: total,
+                isQuantityUpdated: true
+            });
+
+            this.setState({
+                data: updatedData,
+                isQuantityUpdated: true
+            });
+        }
+
+        return total;
+            
+        }
+
     };
     
     
 
 
     handleMultiplesChange = (event, id) => {
+        if (this.state.data.find(item => item.id === id).Distributorname === "NA") {
         const updatedData = [...this.state.data];
         const selectedIndex = updatedData.findIndex(item => item.id === id);
     
@@ -132,6 +141,11 @@ export class InventoryTable extends Component {
             Multiples: multiples,
             SellingPrice: sellingPrice
         });
+    }
+    else {
+        //disble the multiples input field
+        document.getElementById(`multiples-input-${id}`).disabled = true;
+    }
     };
     
 
@@ -167,7 +181,7 @@ export class InventoryTable extends Component {
                     </thead>
                     <tbody>
                         {this.state.data
-                            .filter(val => val.Category === "Inventory")
+                            .filter(val => val.Category === "Inventory" || val.Distributorname !== "NA")
                             .map((val, index) => (
                                 <tr key={val.id}>
                                     <td>{index + 1}</td>
@@ -176,7 +190,8 @@ export class InventoryTable extends Component {
                                     <td>{val.version}</td>
                                     <td>
 
-                                        {this.calculateTotalPerPieceWork(val.id, val.PreparePrice, val.DTPPrice, val.PrintPrice, val.Extracharge)}
+                                        {
+                                        this.calculateTotalPerPieceWork(val.id, val.PreparePrice, val.DTPPrice, val.PrintPrice, val.Extracharge, val.TotalPrice, val.Quantity)}
 
                                     </td>
 

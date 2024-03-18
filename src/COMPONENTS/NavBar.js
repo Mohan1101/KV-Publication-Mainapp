@@ -25,6 +25,7 @@ import OrderTable from '../TABLES/OrderTable';
 import PendingTable from '../TABLES/PendingTable';
 import LedgerTable from '../TABLES/LedgerTable';
 import DaybookTable from '../TABLES/DaybookTable';
+import DistributorTable from '../TABLES/DistributorsTable';
 import Home from '../TABLES/Home';
 
 const drawerWidth = 240;
@@ -81,7 +82,7 @@ export default function NavBar() {
 
                 <Divider />
                 <List>
-                    {['Prepare Books', 'DTP', 'Printing', 'Inventory', 'Specimen Management', 'Order Form', 'Pending Books', 'Day Book', 'Ledger', 'Credit Note'].map((text, index) => (
+                    {['Prepare Books', 'DTP', 'Printing', 'Inventory', 'Distributors ','Specimen Management', 'Order Form', 'Pending Books', 'Day Book', 'Ledger', 'Credit Note'].map((text, index) => (
                         <ListItem key={text} disablePadding onClick={() => handleLinkClick(index + 1, text)}>
                             <ListItemButton>
                                 <ListItemIcon style={{ color: "#fff" }}>
@@ -103,15 +104,13 @@ export default function NavBar() {
                 {navLive === 2 ? <DTPTable /> : false}
                 {navLive === 3 ? <PrintingTable /> : false}
                 {navLive === 4 ? <InventoryTable /> : false}
-                {navLive === 5 ? <SMTable /> : false}
-                {navLive === 6 ? <OrderTable /> : false}
-                {navLive === 7 ? <PendingTable /> : false}
-               
-                {navLive === 8 ? <DaybookTable /> : false}
-                {navLive === 9 ? <LedgerTable /> : false}
-               
-               
-                {navLive === 10 ? <InvoiceTable /> : false}
+                {navLive === 5 ? <DistributorTable /> : false}
+                {navLive === 6 ? <SMTable /> : false}
+                {navLive === 7 ? <OrderTable /> : false}
+                {navLive === 8 ? <PendingTable /> : false}
+                {navLive === 9 ? <DaybookTable /> : false}
+                {navLive === 10 ? <LedgerTable /> : false}
+                {navLive === 11 ? <InvoiceTable /> : false}
               
 
             </Box>

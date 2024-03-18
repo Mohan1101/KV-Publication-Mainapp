@@ -9,6 +9,7 @@ import "./index.css";
 import App from './App';
 import Form1 from './COMPONENTS/FormBook';
 import FormSpecimen from './COMPONENTS/FormSpecimen';
+import FormDistributor from './COMPONENTS/FormDistributor';
 import BooksTable from './TABLES/BooksTable';
 import SMTable from './TABLES/SpecimenManagementTable';
 import InventoryTable from './TABLES/InventoryTable';
@@ -67,6 +68,11 @@ const router = createBrowserRouter([
   {
     path: "/addSpecimen",
     element: <FormSpecimen />,
+  },
+
+  {
+    path: "/addDistributor",
+    element: <FormDistributor />,
   },
  
   {
