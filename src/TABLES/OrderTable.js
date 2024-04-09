@@ -19,7 +19,6 @@ class OrderTable extends Component {
         var dbdata = [];
         const get = firebaseApp.firestore().collection('Orders').get();
         get.then((res) => {
-            var i = 0;
             res.docs.forEach((e) => {
                 dbdata.push({
                     Date: e.get('Date'),
@@ -34,6 +33,9 @@ class OrderTable extends Component {
                 });
             });
     
+            // Sort the data array by Date in descending order
+            dbdata.sort((a, b) => new Date(b.Date) - new Date(a.Date));
+    
             this.setState({
                 data: dbdata,
             }, () => {
@@ -41,6 +43,7 @@ class OrderTable extends Component {
             });
         });
     };
+    
     
 
     handleOrderBookOpen = (orderId) => {

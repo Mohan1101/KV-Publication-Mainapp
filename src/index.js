@@ -9,6 +9,7 @@ import "./index.css";
 import App from './App';
 import Form1 from './COMPONENTS/FormBook';
 import FormSpecimen from './COMPONENTS/FormSpecimen';
+import FormInventory from './COMPONENTS/FormInventory';
 import FormDistributor from './COMPONENTS/FormDistributor';
 import BooksTable from './TABLES/BooksTable';
 import SMTable from './TABLES/SpecimenManagementTable';
@@ -19,6 +20,7 @@ import DTPTable from './TABLES/DTPTable';
 import OrderTable from './TABLES/OrderTable';
 import PendingTable from './TABLES/PendingTable';
 import IncomeTable from './TABLES/IncomeTable';
+import Signin from './PAGES/Signin';
 
 
 
@@ -69,6 +71,11 @@ const router = createBrowserRouter([
     path: "/addSpecimen",
     element: <FormSpecimen />,
   },
+  {
+    path: "/addInventory",
+    element: <FormInventory />,
+  },
+
 
   {
     path: "/addDistributor",
@@ -79,11 +86,16 @@ const router = createBrowserRouter([
     path: "/",
     element: <App />,
   },
+  {
+    path: "/signin",
+    element: <Signin />,
+  }
 ]);
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <RouterProvider router={router} />
+    
     
   </React.StrictMode>
 );

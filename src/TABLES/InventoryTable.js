@@ -164,6 +164,7 @@ export class InventoryTable extends Component {
     render() {
         return (
             <div>
+               
                 <table className='styled-table'>
                     <thead>
                         <tr>
@@ -191,7 +192,7 @@ export class InventoryTable extends Component {
                                     <td>
 
                                         {
-                                        this.calculateTotalPerPieceWork(val.id, val.PreparePrice, val.DTPPrice, val.PrintPrice, val.Extracharge, val.TotalPrice, val.Quantity)}
+                                        this.calculateTotalPerPieceWork(val.id, val.PreparePrice, val.DTPPrice, val.PrintPrice, val.Extracharge, val.Price, val.Quantity)}
 
                                     </td>
 

@@ -19,7 +19,7 @@ import "../SYLES/Book.css"
 import { DTPTable } from '../TABLES/DTPTable';
 import PrintingTable from '../TABLES/PrintingTable';
 import InventoryTable from '../TABLES/InventoryTable';
-import SMTable from '../TABLES/SpecimenManagementTable'; 
+import SMTable from '../TABLES/SpecimenManagementTable';
 import InvoiceTable from '../TABLES/InvoiceTable';
 import OrderTable from '../TABLES/OrderTable';
 import PendingTable from '../TABLES/PendingTable';
@@ -27,12 +27,16 @@ import LedgerTable from '../TABLES/LedgerTable';
 import DaybookTable from '../TABLES/DaybookTable';
 import DistributorTable from '../TABLES/DistributorsTable';
 import Home from '../TABLES/Home';
+import { useNavigate } from 'react-router-dom';
+import firebaseApp from '../Firebasse';
+
 
 const drawerWidth = 240;
 
 export default function NavBar() {
     const [navLive, setNavLive] = useState(0);  // Set the initial state to 0
     const [selectedLink, setSelectedLink] = useState("KV Publishers"); // Set the initial selected link
+    const navigate = useNavigate();
 
     const handleLinkClick = (index, text) => {
         setNavLive(index);
@@ -44,6 +48,21 @@ export default function NavBar() {
         setSelectedLink("KV Publishers");
     }
 
+    const handleSignOut = () => {
+        // Update the isLoggedIn field to false in Firestore
+        const adminRef = firebaseApp.firestore().collection('Admin');
+        // set the isLoggedIn field to false
+        adminRef.doc('YcY68bRONX2Hi7euVWBc').update({
+            isLoggedIn: false
+        }).then(() => {
+            console.log('User signed out successfully!');
+            // Navigate to the '/' route after signing out
+            navigate('/signin');
+        })
+            .catch(error => {
+                console.error('Error signing out:', error);
+            });
+    };
 
 
     return (
@@ -55,11 +74,11 @@ export default function NavBar() {
                 sx={{ width: `calc(100% - ${drawerWidth}px)`, ml: `${drawerWidth}px` }}
             >
                 <Toolbar>
-                <div >
+                    <div >
                         <Typography variant="h6" noWrap component="div">
                             {selectedLink}
                         </Typography>
-                        
+
                     </div>
                 </Toolbar>
             </AppBar>
@@ -76,13 +95,13 @@ export default function NavBar() {
                 }}
                 variant="permanent"
                 anchor="left"
-            >   
-                <img className='logo' src={logo} onClick={handleLogoClick} style={{ cursor: 'pointer' }}/>
-                
+            >
+                <img className='logo' src={logo} onClick={handleLogoClick} style={{ cursor: 'pointer' }} />
+
 
                 <Divider />
                 <List>
-                    {['Prepare Books', 'DTP', 'Printing', 'Inventory', 'Distributors ','Specimen Management', 'Order Form', 'Pending Books', 'Day Book', 'Ledger', 'Credit Note'].map((text, index) => (
+                    {['Prepare Books', 'DTP', 'Printing', 'Inventory', 'Distributors ', 'Specimen Management', 'Order Form', 'Pending Books', 'Day Book', 'Ledger', 'Credit Note'].map((text, index) => (
                         <ListItem key={text} disablePadding onClick={() => handleLinkClick(index + 1, text)}>
                             <ListItemButton>
                                 <ListItemIcon style={{ color: "#fff" }}>
@@ -92,6 +111,15 @@ export default function NavBar() {
                             </ListItemButton>
                         </ListItem>
                     ))}
+                    <ListItem key="Signout" disablePadding onClick={handleSignOut}>
+                        <ListItemButton>
+                            <ListItemIcon style={{ color: "#fff" }}>
+                                <InboxIcon />
+                            </ListItemIcon>
+                            <ListItemText primary="Signout" />
+                        </ListItemButton>
+                    </ListItem>
+
                 </List>
             </Drawer>
             <Box
@@ -111,7 +139,9 @@ export default function NavBar() {
                 {navLive === 9 ? <DaybookTable /> : false}
                 {navLive === 10 ? <LedgerTable /> : false}
                 {navLive === 11 ? <InvoiceTable /> : false}
-              
+                {navLive === 12 ? onclick = { handleSignOut } : false}
+
+
 
             </Box>
         </Box>

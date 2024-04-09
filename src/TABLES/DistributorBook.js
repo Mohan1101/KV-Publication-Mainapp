@@ -55,8 +55,9 @@ class DistributorBook extends Component {
               <th>Quantity</th>
               <th>Price</th>
               <th>Discount Rate(%)</th>
-              <th>Total Price</th>
+             
             <th>Discounted Amount</th>
+            <th>Total Price</th>
 
 
             </tr>
@@ -69,8 +70,9 @@ class DistributorBook extends Component {
                 <td>{product.Quantity}</td>
                 <td>{product.Price}</td>
                 <td>{product.DiscountRate}</td>
-                <td>{Math.round(product.TotalPrice)}</td>
                 <td>{product.DiscountAmount}</td>
+                <td>{Math.round(product.TotalPrice)}</td>
+                
               </tr>
             ))}
           </tbody>

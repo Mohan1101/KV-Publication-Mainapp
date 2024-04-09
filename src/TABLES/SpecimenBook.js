@@ -103,17 +103,55 @@ handleAddItem = async () => {
       console.error('Error deleting book data:', error);
     }
   };
-  getProductData = async () => {
+ 
+  getInventoryProducts = async () => {
     try {
-      const snapshot = await firebaseApp.firestore().collection('GENERAL PRODUCTS').where('Category', '==', 'Inventory').get();
+      const snapshot = await firebaseApp.firestore()
+        .collection('GENERAL PRODUCTS')
+        .where('Category', '==', 'Inventory')
+        .get();
+  
       const inventoryProducts = snapshot.docs.map((doc) => doc.get('BookName'));
-      this.setState({
-        inventoryProducts,
-      });
+      
+      return inventoryProducts;
     } catch (error) {
-      console.error('Error getting inventoryProducts:', error);
+      console.error('Error getting inventory products:', error);
+      return [];
     }
   };
+  
+  getDistributorProducts = async () => {
+    try {
+      const snapshot = await firebaseApp.firestore()
+        .collection('GENERAL PRODUCTS')
+        .where('Distributorname', '!=', 'NA')
+        .get();
+  
+      const distributorProducts = snapshot.docs.map((doc) => doc.get('BookName'));
+      
+      return distributorProducts;
+    } catch (error) {
+      console.error('Error getting distributor products:', error);
+      return [];
+    }
+  };
+  
+  getProductData = async () => {
+    try {
+      const inventoryProducts = await this.getInventoryProducts();
+      const distributorProducts = await this.getDistributorProducts();
+  
+      // Merge both arrays and remove duplicates
+      const mergedProducts = [...new Set([...inventoryProducts, ...distributorProducts])];
+      
+      this.setState({
+        inventoryProducts: mergedProducts,
+      });
+    } catch (error) {
+      console.error('Error getting products:', error);
+    }
+  };
+  
   
 
   // Function to fetch specimenData from Firebase
